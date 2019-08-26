@@ -15,10 +15,6 @@ SET cmdProxyEnable=0
 
 cmdProxyEnable [0/1] Desactiva la configuracion proxy y la IP del a VPN
 
-SET cmdDHCPEnable=1
-
-cmdDHCPEnable [0/1]  en 0 si ya cuentas con una configuracion alternativa a la VPN
-
 SET cmdPrivateIPEnable=0
 cmdPrivateIPEnable [0/1] Si cuentas con una configuracion alternativa al VPN y distinta a usar el DHCP 
 
