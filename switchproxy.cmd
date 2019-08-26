@@ -5,22 +5,25 @@ REM Varialbes del entorno.
 SETLOCAL
 REM SETLOCAL enabledelayedexpansion
 SET cmdipv4=154
-SET cmdProxyEnable=1
-SET cmdDHCPEnable=0
+: La IP de la vpn termina con especificado cmdipv4
+SET cmdProxyEnable=0
+: Desactiva la configuracion proxy y la IP del a VPN
+SET cmdDHCPEnable=1
+: cmdDHCPEnable en 0 si ya cuentas con una configuracion alternativa a la VPN
 SET cmdPrivateIPEnable=0
 SET cmdEthernetName=Ethernet 2
 
 
 REM Registrando parametros si estan disponibles.
 :-------------------------------------
-    IF exist set.cmd (
+    IF exist %temp%\set.cmd (
         ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE SET.CMD
         echo Muestro: 
-        type set.cmd
+        type %temp%\set.cmd
         ECHO Muestro: 
         set cmd
-        call set.cmd
-        del set.cmd
+        call %temp%\set.cmd
+        del %temp%\set.cmd
         ECHO Muestro: 
         set cmd
         GOTO SetProxy
@@ -32,11 +35,11 @@ REM Registrando parametros si estan disponibles.
         ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
         GOTO FIN
      )
-    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > set.cmd & echo SET cmdProxyEnable=0 >> set.cmd
-    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> set.cmd
+    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > %temp%\set.cmd & echo SET cmdProxyEnable=0 >> %temp%\set.cmd
+    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> %temp%\set.cmd
     )
 
-    GOTO FIN
+ rem    GOTO FIN
 
 REM .bat con permisos de administrador
 :-------------------------------------
@@ -110,7 +113,7 @@ REM Aplicando cambios de configuracion
     netsh interface set interface "%cmdEthernetName%" disabled
     netsh interface set interface "%cmdEthernetName%" enabled
 
-rem FIN DEL CUENTO BY dev@naza.uy
+rem FIN DEL CUENTO BY NAZA
 :--------------------------------------  
     :FIN
     ECHO.
