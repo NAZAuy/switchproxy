@@ -16,27 +16,21 @@ REM Varialbes del entorno.
 
 REM Registrando parametros si estan disponibles.
 :-------------------------------------
-    IF exist settemp.cmd (
-    ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE settemp.cmd
-    echo Muestro: 
-    type settemp.cmd
-    ECHO Muestro: 
-    set cmd
-    call settemp.cmd
-    del settemp.cmd
-    ECHO Muestro: 
-    set cmd
-    GOTO SetProxy
+    IF exist %~dp0\set.cmd (
+    CD /D "%~dp0"
+    ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE set.cmd
+    CALL set.cmd
+    DEL set.cmd
     ) ELSE (
-     if "%1" EQU "/?" (
+    if "%1" EQU "/?" (
     ECHO GESTION PROXY 1.0 BNING4 por Jesus Gomez
     ECHO Permite de forma fácil activar y desactivar el proxy.
     ECHO Específica [switchproxy noproxy] para desactivar la conexión VPN.
     ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
     GOTO FIN
-     )
-    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es settemp.cmd > settemp.cmd & echo SET cmdProxyEnable=0 >> settemp.cmd
-    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> settemp.cmd
+    )
+    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > set.cmd & echo SET cmdProxyEnable=0 >> set.cmd
+    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> set.cmd
     )
 
 REM .bat con permisos de administrador
@@ -83,11 +77,11 @@ REM Aplicando cambios de configuracion
 :-------------------------------------
 
     :gotAdmin
-    COLOR 0C
+    COLOR 0E
     pushd "%CD%"
     CD /D "%~dp0"
     rem Elimino el archivo settemp.
-    del settemp.cmd
+    del set.cmd
 
     ECHO ### Modificando Netsh para la IP: %cmdipv4%
     if "%cmdProxyEnable%" EQU "1" (
@@ -97,13 +91,13 @@ REM Aplicando cambios de configuracion
     ECHO ### Netsh VPN Activado con la IPv4 = 10.1.59.%cmdipv4% en la Interface "%cmdEthernetName%"
     ) ELSE (
     IF "%cmdPrivateIPEnable%" EQU "0" (
-    rem Perfil DHCP
+    REM Perfil DHCP
     netsh interface ipv4 set address "%cmdEthernetName%" dhcp
     netsh interface ip delete dnsserver "%cmdEthernetName%" all
     netsh interface ipv4 add dnsserver "%cmdEthernetName%" dhcp
     ECHO ### Netsh ADSL Activado con la DHCP en la Interface "%cmdEthernetName%"
     ) ELSE (
-    rem Perfil ip privada alternativa a la del proxy.
+    REM Perfil ip privada alternativa a la del proxy.
     netsh interface ipv4 set address "%cmdEthernetName%" static 192.168.0.%cmdipv4% 255.255.255.0 192.168.0.1 gwmetric=1
     netsh interface ip delete dnsserver "%cmdEthernetName%" all
     netsh interface ipv4 add dnsserver "%cmdEthernetName%" 192.168.0.1 index=1
@@ -118,4 +112,4 @@ rem FIN DEL CUENTO BY NAZA
 :--------------------------------------  
     :FIN
     ECHO.
-    ENDLOCAL
+    Exit /B
