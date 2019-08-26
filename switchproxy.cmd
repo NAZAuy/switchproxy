@@ -1,4 +1,4 @@
-@ECHO off & TITLE GESTION PROXY 1.0 BNING4 (Jesus Gomez) & REM COLOR 0A
+@ECHO off & TITLE GESTION PROXY 1.0 BNING4 (Jesus Gomez) & COLOR 0A
 REM Rutina en CMD para activar y desactivar el proxy del Ejercito Nacional. Jesus Gomez (Administrador de sistemas informaticos.)
 
 REM Varialbes del entorno.
@@ -16,14 +16,14 @@ REM Varialbes del entorno.
 
 REM Registrando parametros si estan disponibles.
 :-------------------------------------
-    IF exist %temp%\set.cmd (
-    ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE SET.CMD
+    IF exist settemp.cmd (
+    ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE settemp.cmd
     echo Muestro: 
-    type %temp%\set.cmd
+    type settemp.cmd
     ECHO Muestro: 
     set cmd
-    call %temp%\set.cmd
-    del %temp%\set.cmd
+    call settemp.cmd
+    del settemp.cmd
     ECHO Muestro: 
     set cmd
     GOTO SetProxy
@@ -35,8 +35,8 @@ REM Registrando parametros si estan disponibles.
     ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
     GOTO FIN
      )
-    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > %temp%\set.cmd & echo SET cmdProxyEnable=0 >> %temp%\set.cmd
-    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> %temp%\set.cmd
+    if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es settemp.cmd > settemp.cmd & echo SET cmdProxyEnable=0 >> settemp.cmd
+    if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> settemp.cmd
     )
 
 REM .bat con permisos de administrador
@@ -77,16 +77,17 @@ REM Estado de los permisos
 
     "%temp%\getadmin.vbs"
     del "%temp%\getadmin.vbs"
-    pause
     exit /B
 
 REM Aplicando cambios de configuracion
 :-------------------------------------
 
     :gotAdmin
-    REM COLOR 0C
+    COLOR 0C
     pushd "%CD%"
     CD /D "%~dp0"
+    rem Elimino el archivo settemp.
+    del settemp.cmd
 
     ECHO ### Modificando Netsh para la IP: %cmdipv4%
     if "%cmdProxyEnable%" EQU "1" (
@@ -96,11 +97,13 @@ REM Aplicando cambios de configuracion
     ECHO ### Netsh VPN Activado con la IPv4 = 10.1.59.%cmdipv4% en la Interface "%cmdEthernetName%"
     ) ELSE (
     IF "%cmdPrivateIPEnable%" EQU "0" (
+    rem Perfil DHCP
     netsh interface ipv4 set address "%cmdEthernetName%" dhcp
     netsh interface ip delete dnsserver "%cmdEthernetName%" all
     netsh interface ipv4 add dnsserver "%cmdEthernetName%" dhcp
     ECHO ### Netsh ADSL Activado con la DHCP en la Interface "%cmdEthernetName%"
     ) ELSE (
+    rem Perfil ip privada alternativa a la del proxy.
     netsh interface ipv4 set address "%cmdEthernetName%" static 192.168.0.%cmdipv4% 255.255.255.0 192.168.0.1 gwmetric=1
     netsh interface ip delete dnsserver "%cmdEthernetName%" all
     netsh interface ipv4 add dnsserver "%cmdEthernetName%" 192.168.0.1 index=1
@@ -116,6 +119,3 @@ rem FIN DEL CUENTO BY NAZA
     :FIN
     ECHO.
     ENDLOCAL
-    REM TIMEOUT /T 10 /NOBREAK
-    PAUSE
-    CLS
