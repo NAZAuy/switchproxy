@@ -1,58 +1,56 @@
 @ECHO off & TITLE GESTION PROXY 1.0 BNING4 (Jesus Gomez) & REM COLOR 0A
 REM Rutina en CMD para activar y desactivar el proxy del Ejercito Nacional. Jesus Gomez (Administrador de sistemas informaticos.)
+
 REM Varialbes del entorno.
 :-------------------------------------
-SETLOCAL
-REM SETLOCAL enabledelayedexpansion
-SET cmdipv4=154
-: La IP de la vpn termina con especificado cmdipv4
-SET cmdProxyEnable=0
-: Desactiva la configuracion proxy y la IP del a VPN
-SET cmdDHCPEnable=1
-: cmdDHCPEnable en 0 si ya cuentas con una configuracion alternativa a la VPN
-SET cmdPrivateIPEnable=0
-SET cmdEthernetName=Ethernet 2
-
+    SETLOCAL
+    REM SETLOCAL enabledelayedexpansion
+    SET cmdipv4=154
+    : La IP de la vpn termina con especificado cmdipv4
+    SET cmdProxyEnable=1
+    : Desactiva la configuracion proxy y la IP del a VPN
+    SET cmdPrivateIPEnable=0
+    : Si se cuenta con una alternativa al DHCP y no se decea usar.
+    SET cmdEthernetName=Ethernet 2
+    : Nombre de la Interfase a ser modificada.
 
 REM Registrando parametros si estan disponibles.
 :-------------------------------------
     IF exist %temp%\set.cmd (
-        ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE SET.CMD
-        echo Muestro: 
-        type %temp%\set.cmd
-        ECHO Muestro: 
-        set cmd
-        call %temp%\set.cmd
-        del %temp%\set.cmd
-        ECHO Muestro: 
-        set cmd
-        GOTO SetProxy
+    ECHO ### CARGO Y MUESTRO CONFIGURACION DESDE SET.CMD
+    echo Muestro: 
+    type %temp%\set.cmd
+    ECHO Muestro: 
+    set cmd
+    call %temp%\set.cmd
+    del %temp%\set.cmd
+    ECHO Muestro: 
+    set cmd
+    GOTO SetProxy
     ) ELSE (
      if "%1" EQU "/?" (
-        ECHO GESTION PROXY 1.0 BNING4 por Jesus Gomez
-        ECHO Permite de forma fácil activar y desactivar el proxy.
-        ECHO Específica [switchproxy noproxy] para desactivar la conexión VPN.
-        ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
-        GOTO FIN
+    ECHO GESTION PROXY 1.0 BNING4 por Jesus Gomez
+    ECHO Permite de forma fácil activar y desactivar el proxy.
+    ECHO Específica [switchproxy noproxy] para desactivar la conexión VPN.
+    ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
+    GOTO FIN
      )
     if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > %temp%\set.cmd & echo SET cmdProxyEnable=0 >> %temp%\set.cmd
     if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> %temp%\set.cmd
     )
-
- rem    GOTO FIN
 
 REM .bat con permisos de administrador
 :-------------------------------------
     :SetProxy
     ECHO ### Modificando Estado del Proxy
     IF "%cmdProxyEnable%" EQU "1" (
-        reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f
-        reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /d 10.1.1.57:8080 /f
-        reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /d "<local>" /f
-        ECHO ### Proxy activado para %USERNAME%
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /d 10.1.1.57:8080 /f
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /d "<local>" /f
+    ECHO ### Proxy activado para %USERNAME%
     ) ELSE (
-        reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
-        ECHO ### Proxy desactivado para %USERNAME%
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
+    ECHO ### Proxy desactivado para %USERNAME%
     )
 
 REM Estado de los permisos
