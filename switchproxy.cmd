@@ -1,4 +1,4 @@
-@ECHO off & TITLE GESTION PROXY 1.0 BNING4 (Jesus Gomez) & COLOR 0A
+@echo off & TITLE SWICTCH PROXY 1.0 BNING4 (Jesus Gomez) & COLOR 0A
 REM Rutina en CMD para activar y desactivar el proxy del Ejercito Nacional. Jesus Gomez (Administrador de sistemas informaticos.)
 
 REM Varialbes del entorno.
@@ -9,8 +9,8 @@ REM Varialbes del entorno.
     : La IP de la vpn termina con especificado cmdipv4
     SET cmdProxyEnable=1
     : Desactiva la configuracion proxy y la IP del a VPN
-    SET cmdPrivateIPEnable=0
-    : Si se cuenta con una alternativa al DHCP y no se decea usar.
+    SET cmdPrivateIPEnable=1
+    : Si se cuenta con una alternativa perfil IP al DHCP especifique 1. O para DHCP
     SET cmdEthernetName=Ethernet 2
     : Nombre de la Interfase a ser modificada.
 
@@ -24,14 +24,17 @@ REM Registrando parametros si estan disponibles.
     ) ELSE (
     if "%1" EQU "/?" (
     ECHO GESTION PROXY 1.0 BNING4 por Jesus Gomez
-    ECHO Permite de forma fácil activar y desactivar el proxy.
-    ECHO Específica [switchproxy noproxy] para desactivar la conexión VPN.
-    ECHO Específica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
+    ECHO Permite de forma facil activar y desactivar el proxy.
+    ECHO Especifica [switchproxy noproxy] para desactivar la conexion VPN.
+    ECHO Especifica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
     GOTO FIN
     )
     if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > set.cmd & echo SET cmdProxyEnable=0 >> set.cmd
     if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> set.cmd
     )
+
+REM Marca
+:-------------------------------------
 
 REM .bat con permisos de administrador
 :-------------------------------------
@@ -81,9 +84,8 @@ REM Aplicando cambios de configuracion
     pushd "%CD%"
     CD /D "%~dp0"
     rem Elimino el archivo settemp.
-    del set.cmd
+    IF exist %~dp0\set.cmd del set.cmd
 
-    ECHO ### Modificando Netsh para la IP: %cmdipv4%
     if "%cmdProxyEnable%" EQU "1" (
     netsh interface ipv4 set address "%cmdEthernetName%" static 10.1.59.%cmdipv4% 255.255.255.0 10.1.59.1 gwmetric=1
     netsh interface ip delete dnsserver "%cmdEthernetName%" all
