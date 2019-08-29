@@ -1,4 +1,4 @@
-@echo off & TITLE SWICTCH PROXY 1.0 BNING4 (Jesus Gomez) & COLOR 0A
+@echo off & TITLE SWICTCH PROXY 1.1 BNING4 (Jesus Gomez) & COLOR 0A
 REM Rutina en CMD para activar y desactivar el proxy del Ejercito Nacional. Jesus Gomez (Administrador de sistemas informaticos.)
 
 REM Varialbes del entorno.
@@ -27,8 +27,10 @@ REM Registrando parametros si estan disponibles.
     ECHO Permite de forma facil activar y desactivar el proxy.
     ECHO Especifica [switchproxy noproxy] para desactivar la conexion VPN.
     ECHO Especifica [switchproxy noproxy nodhcp] desactiva VPN y activa alternativa en la red.
+    ECHO Especifica [switchproxy onlyproxy] Solo activa el proxy y no modifica la ip.
     GOTO FIN
     )
+    if "%1" EQU "onlyproxy" SET cmdProxyEnable=2 & GOTO SetProxy
     if "%1" EQU "noproxy" SET cmdProxyEnable=0 & echo :Este archivo es set.cmd > set.cmd & echo SET cmdProxyEnable=0 >> set.cmd
     if "%2" EQU "nodhcp" SET cmdPrivateIPEnable=1 & echo SET cmdPrivateIPEnable=1 >> set.cmd
     )
@@ -40,7 +42,7 @@ REM .bat con permisos de administrador
 :-------------------------------------
     :SetProxy
     ECHO ### Modificando Estado del Proxy
-    IF "%cmdProxyEnable%" EQU "1" (
+    IF "%cmdProxyEnable%" GEQ "1" (
     reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f
     reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /d 10.1.1.57:8080 /f
     reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /d "<local>" /f
@@ -49,6 +51,8 @@ REM .bat con permisos de administrador
     reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
     ECHO ### Proxy desactivado para %USERNAME%
     )
+    REM Salir si es solo activar el plroxy.
+    if "%1" EQU "onlyproxy" GOTO FIN
 
 REM Estado de los permisos
 :-------------------------------------
