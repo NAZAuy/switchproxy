@@ -1,4 +1,4 @@
-# Switch Proxy CMD 1.0
+# Switch Proxy CMD 1.1
 - CMD que nos permite optar por tener la configuración proxy con su respectiva IP y volver a DHCP y el proxy desactivado.
 # A quien va dirigido.
 - Usuarios de PC portátiles que van de una red dementica a una empresarial. Es normal que en la empresa tengan configuración especifica por tema de seguridad y/o control. Switch Proxy CMD además de poder activar y desactivar el proxy, podrás cambiar el perfil de TCP/IP.
