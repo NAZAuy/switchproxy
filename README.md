@@ -9,6 +9,6 @@ En pocos casos en la empresa misma pueden tener más de una opción de red y Swi
 - Dentro del CMD podrás cambiar los 3 primeros valores de la IP ###.###.###. cmdipv4
 - [cmdProxyEnable] [0/1] Desactiva la configuración proxy y la IP del a VPN o como parámetro en línea de comando [noproxy]
 - [cmdPrivateIPEnable] [0/1] Si cuentas con una configuración alternativa al VPN y distinta a usar el DHCP o como parámetro en línea de comando [nodhcp]
-- Ejecutar sin parametro para recibir ayuda
+- Ejecutar sin parámetro para recibir ayuda
 - cmdEthernetName Especifica que interface va a ser modificada.
 - Comenta si no fue clara esta ayuda.
